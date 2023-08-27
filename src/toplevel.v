@@ -32,16 +32,16 @@ module toplevel (
     input         rst_n_pad_i,
     input         btn_n_pad_i,
 
-    output [1:0]  sdram_ba_pad_o,
-    output [12:0] sdram_a_pad_o,
-    output        sdram_cs_n_pad_o,
-    output        sdram_ras_pad_o,
-    output        sdram_cas_pad_o,
-    output        sdram_we_pad_o,
-    inout  [15:0] sdram_dq_pad_io,
-    output [1:0]  sdram_dqm_pad_o,
-    output        sdram_cke_pad_o,
-    output        sdram_clk_pad_o,
+    output [1:0]  ram_ba_pad_o,
+    output [12:0] ram_a_pad_o,
+    output        ram_cs_n_pad_o,
+    output        ram_ras_pad_o,
+    output        ram_cas_pad_o,
+    output        ram_we_pad_o,
+    inout  [15:0] ram_dq_pad_io,
+    output [1:0]  ram_dqm_pad_o,
+    output        ram_cke_pad_o,
+    output        ram_clk_pad_o,
 
     inout [7:0]   gpio0_io,  /* LEDs */
     input [3:0]   gpio1_i    /* DIPs */
@@ -50,7 +50,7 @@ module toplevel (
 wire clk100m;
 wire clk1m;
 
-assign sdram_clk_pad_o = clk100m;
+assign ram_clk_pad_o = clk100m;
 
 // PLLs
 pll_100m pll_100mi (
@@ -131,10 +131,10 @@ fifo #(.BUS_WIDTH(16)) rddata_fifoi (
 );
 
 
-/* SDRAM */
+/* ram */
 
 
-sdram_controller sdram_controlleri (
+ram_controller ram_controlleri (
     /* HOST INTERFACE */
     .wr_addr       (wro_fifo[39:16]),
     .wr_data       (wro_fifo[15:0]),
@@ -149,17 +149,17 @@ sdram_controller sdram_controlleri (
     .rst_n         (rst_n_pad_i),
     .clk           (clk100m),
 
-    /* SDRAM SIDE */
-    .addr          (sdram_a_pad_o),
-    .bank_addr     (sdram_ba_pad_o),
-    .data          (sdram_dq_pad_io),
-    .clock_enable  (sdram_cke_pad_o),
-    .cs_n          (sdram_cs_n_pad_o),
-    .ras_n         (sdram_ras_pad_o),
-    .cas_n         (sdram_cas_pad_o),
-    .we_n          (sdram_we_pad_o),
-    .data_mask_low (sdram_dqm_pad_o[0]),
-    .data_mask_high(sdram_dqm_pad_o[1])
+    /* ram SIDE */
+    .addr          (ram_a_pad_o),
+    .bank_addr     (ram_ba_pad_o),
+    .data          (ram_dq_pad_io),
+    .clock_enable  (ram_cke_pad_o),
+    .cs_n          (ram_cs_n_pad_o),
+    .ras_n         (ram_ras_pad_o),
+    .cas_n         (ram_cas_pad_o),
+    .we_n          (ram_we_pad_o),
+    .data_mask_low (ram_dqm_pad_o[0]),
+    .data_mask_high(ram_dqm_pad_o[1])
 );
 
 wire        busy;

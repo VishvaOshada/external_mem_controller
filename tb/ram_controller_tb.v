@@ -1,10 +1,10 @@
 /**
- * Testbench for sdram_controller modules, simulates:
+ * Testbench for ram_controller modules, simulates:
  *  - Iinit
  *  - Write
  *  - Read
  */
-module sdram_controller_tb();
+module ram_controller_tb();
 
     vlog_tb_utils vlog_tb_utils0();
 
@@ -15,7 +15,7 @@ module sdram_controller_tb();
     wire busy; 
     reg rd_enable, wr_enable, rst_n, clk;
 
-    /* SDRAM SIDE */
+    /* ram SIDE */
     wire [12:0] addr;
     wire [1:0] bank_addr;
     wire [15:0] data; 
@@ -65,14 +65,14 @@ module sdram_controller_tb();
     end
 
 
-sdram_controller sdram_controlleri (
+ram_controller ram_controlleri (
     /* HOST INTERFACE */
     .wr_addr(haddr), 
     .wr_data(data_input),
     .rd_data(data_output),
     .busy(busy), .rd_enable(rd_enable), .wr_enable(wr_enable), .rst_n(rst_n), .clk(clk),
 
-    /* SDRAM SIDE */
+    /* ram SIDE */
     .addr(addr), .bank_addr(bank_addr), .data(data), .clock_enable(clock_enable), .cs_n(cs_n), .ras_n(ras_n), .cas_n(cas_n), .we_n(we_n), .data_mask_low(data_mask_low), .data_mask_high(data_mask_high)
 );
 

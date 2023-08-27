@@ -1,5 +1,5 @@
 /**
- * simple controller for ISSI IS42S16160G-7 SDRAM found in De0 Nano
+ * simple controller for ISSI IS42S16160G-7 ram found in De0 Nano
  *  16Mbit x 16 data bit bus (32 megabytes)
  *  Default options
  *    133Mhz
@@ -7,7 +7,7 @@
  *
  *  Very simple host interface
  *     * No burst support
- *     * haddr - address for reading and wriging 16 bits of data
+ *     * haddr - address for reading and writing 16 bits of data
  *     * data_input - data for writing, latched in when wr_enable is highz0
  *     * data_output - data for reading, comes available sometime
  *       *few clocks* after rd_enable and address is presented on bus
@@ -15,14 +15,14 @@
  *     * rd_enable - read enable, on clk posedge haddr will be latched in,
  *       after *few clocks* data will be available on the data_output port
  *     * wr_enable - write enable, on clk posedge haddr and data_input will
- *       be latched in, after *few clocks* data will be written to sdram
+ *       be latched in, after *few clocks* data will be written to ram
  *
  * Theory
  *  This simple host interface has a busy signal to tell you when you are
  *  not able to issue commands.
  */
 
-module sdram_controller (
+module ram_controller (
     /* HOST INTERFACE */
     wr_addr,
     wr_data,
@@ -35,7 +35,7 @@ module sdram_controller (
 
     busy, rst_n, clk,
 
-    /* SDRAM SIDE */
+    /* ram SIDE */
     addr, bank_addr, data, clock_enable, cs_n, ras_n, cas_n, we_n,
     data_mask_low, data_mask_high
 );
@@ -114,7 +114,7 @@ output                     busy;
 input                      rst_n;
 input                      clk;
 
-/* SDRAM SIDE */
+/* ram SIDE */
 output [SDRADDR_WIDTH-1:0] addr;
 output [BANK_WIDTH-1:0]    bank_addr;
 inout  [15:0]              data;
@@ -161,7 +161,7 @@ reg [4:0] next;
 assign {clock_enable, cs_n, ras_n, cas_n, we_n} = command[7:3];
 // state[4] will be set if mode is read/write
 assign bank_addr      = (state[4]) ? bank_addr_r : command[2:1];
-assign addr           = (state[4] | state == INIT_LOAD) ? addr_r : { {SDRADDR_WIDTH-11{1'b0}}, command[0], 10'd0 };
+assign addr           = (state[4] | state == INIT_LOAD) ? addr_r : { {SDRADDR_WIDTH-11{1'b0}}, command[0], 10'd0 };//0000000000010000000000
 
 assign data = (state == WRIT_CAS) ? wr_data_r : 16'bz;
 assign rd_ready = rd_ready_r;
@@ -212,7 +212,7 @@ always @ (posedge clk)
     end
 
 // Handle refresh counter
-always @ (posedge clk)
+always @ ( negedge clk or posedge clk )
  if (~rst_n)
    refresh_cnt <= 10'b0;
  else
@@ -222,10 +222,10 @@ always @ (posedge clk)
      refresh_cnt <= refresh_cnt + 1'b1;
 
 
-/* Handle logic for sending addresses to SDRAM based on current state*/
+/* Handle logic for sending addresses to ram based on current state*/
 always @*
 begin
-    if (state[4])
+    if (state[4])//if the state of the controller is in reading/writing states
       {data_mask_low_r, data_mask_high_r} = 2'b00;
     else
       {data_mask_low_r, data_mask_high_r} = 2'b11;

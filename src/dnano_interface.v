@@ -1,6 +1,6 @@
-/* De0 Nano interface for testing sdram controller 
+/* De0 Nano interface for testing ram controller 
  * Handles interpreting buttons and switches 
- * to talk to the sdram controller.
+ * to talk to the ram controller.
  */
 
 module dnano_interface (
@@ -58,7 +58,7 @@ reg                       rd_ack_r;
 wire  dbl_clck_rst_n;
 
 // When to reset the double click output
-// we want to reset after we know the sdram is busy
+// we want to reset after we know the ram is busy
 // busy | rst_n
 //  0      0     - reset is on  (be-low )
 //  0      1     - reset is off (be high)
@@ -68,7 +68,7 @@ assign dbl_clck_rst_n = rst_n & ~busy;
 
 // expand the dip data from 4 to 16 bits
 assign wr_data = {dip, dip, ~dip, ~dip};
-// toggle leds between sdram msb and lsb
+// toggle leds between ram msb and lsb
 assign leds = led_cnt[LED_BLINK-1] ? rd_data_r[15:8] : rd_data_r[7:0]; 
 
 assign haddr  = {(HADDR_WIDTH/4){dip}};
