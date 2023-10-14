@@ -212,7 +212,7 @@ always @ (posedge clk)
     end
 
 // Handle refresh counter
-always @ ( negedge clk or posedge clk )
+always @ (clk )
  if (~rst_n)
    refresh_cnt <= 10'b0;
  else
